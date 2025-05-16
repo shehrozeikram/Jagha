@@ -8,6 +8,8 @@ import {
   Image,
   Dimensions,
   SafeAreaView,
+  Platform,
+  StatusBar,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
@@ -27,7 +29,7 @@ const Register = () => {
       {/* Back Button */}
       <TouchableOpacity style={styles.backButton}>
         <View style={styles.backCircle}>
-          <Text style={styles.backArrow}>{'<'}</Text>
+          <Image source={require('../assets/back_arrow.png')} style={styles.backArrowImage} />
         </View>
       </TouchableOpacity>
       <View style={styles.content}>
@@ -37,7 +39,7 @@ const Register = () => {
         <Text style={styles.subtitle}>quis nostrud exercitation ullamco laboris nisi ut</Text>
         {/* Full Name */}
         <View style={styles.inputContainer}>
-          {/* <Image source={require('../assets/user_icon.png')} style={styles.inputIcon} /> */}
+          <Image source={require('../assets/user_icon.png')} style={styles.inputIcon} />
           <TextInput
             style={styles.input}
             placeholder="Full name"
@@ -48,7 +50,7 @@ const Register = () => {
         </View>
         {/* Email */}
         <View style={styles.inputContainer}>
-          {/* <Image source={require('../assets/email_icon.png')} style={styles.inputIcon} /> */}
+          <Image source={require('../assets/email_icon.png')} style={styles.inputIcon} />
           <TextInput
             style={styles.input}
             placeholder="Email"
@@ -61,7 +63,7 @@ const Register = () => {
         </View>
         {/* Phone */}
         <View style={styles.inputContainer}>
-          {/* <Image source={require('../assets/phone_icon.png')} style={styles.inputIcon} /> */}
+          <Image source={require('../assets/phone_icon.png')} style={styles.inputIcon} />
           <TextInput
             style={styles.input}
             placeholder="Phone"
@@ -73,7 +75,7 @@ const Register = () => {
         </View>
         {/* CNIC Number */}
         <View style={styles.inputContainer}>
-          {/* <Image source={require('../assets/idcard_icon.png')} style={styles.inputIcon} /> */}
+          <Image source={require('../assets/idcard_icon.png')} style={styles.inputIcon} />
           <TextInput
             style={styles.input}
             placeholder="CNIC Number"
@@ -85,7 +87,7 @@ const Register = () => {
         </View>
         {/* City of Residence (Dropdown placeholder) */}
         <View style={styles.inputContainer}>
-          {/* <Image source={require('../assets/city_icon.png')} style={styles.inputIcon} /> */}
+          <Image source={require('../assets/city_icon.png')} style={styles.inputIcon} />
           <TextInput
             style={styles.input}
             placeholder="City of Residence"
@@ -93,11 +95,11 @@ const Register = () => {
             value={city}
             onChangeText={setCity}
           />
-          {/* <Image source={require('../assets/chevron_down.png')} style={styles.chevronIcon} /> */}
+          <Image source={require('../assets/chevron_down.png')} style={styles.chevronIcon} />
         </View>
         {/* Password */}
         <View style={styles.inputContainer}>
-          {/* <Image source={require('../assets/lock_icon.png')} style={styles.inputIcon} /> */}
+          <Image source={require('../assets/lock_icon.png')} style={styles.inputIcon} />
           <TextInput
             style={styles.input}
             placeholder="Password"
@@ -147,7 +149,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: 'absolute',
-    top: 32,
+    top: Platform.select({ ios: 72, android: (StatusBar.currentHeight ? StatusBar.currentHeight + 32 : 56) }),
     left: 24,
     zIndex: 10,
   },
@@ -159,10 +161,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  backArrow: {
-    fontSize: 28,
-    color: '#252B5C',
-    fontWeight: 'bold',
+  backArrowImage: {
+    width: 22,
+    height: 22,
+    resizeMode: 'contain',
+    tintColor: '#252B5C',
   },
   content: {
     flex: 1,

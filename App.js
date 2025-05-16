@@ -8,6 +8,9 @@ import {
 import SplashScreen from './app/screens/SplashScreen';
 import Login from './app/screens/Login';
 import Register from './app/screens/Register';
+import Location from './app/screens/Location';
+import RealEstateType from './app/screens/RealEstateType';
+import PaymentMethod from './app/screens/PaymentMethod';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -25,7 +28,10 @@ function App() {
 
   return (
     // <Login />
-    <Register />
+    // <Register />
+    // <Location />
+    // <RealEstateType />
+    <PaymentMethod />
   );
 }
 
