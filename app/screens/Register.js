@@ -12,10 +12,12 @@ import {
   StatusBar,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 
 const Register = () => {
+  const navigation = useNavigation();
   const [showPassword, setShowPassword] = useState(false);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -24,10 +26,22 @@ const Register = () => {
   const [city, setCity] = useState('');
   const [password, setPassword] = useState('');
 
+  const handleBack = () => {
+    navigation.goBack();
+  };
+
+  const handleRegister = () => {
+    navigation.navigate('Location');
+  };
+
+  const handleLogin = () => {
+    navigation.navigate('Login');
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Back Button */}
-      <TouchableOpacity style={styles.backButton}>
+      <TouchableOpacity style={styles.backButton} onPress={handleBack}>
         <View style={styles.backCircle}>
           <Image source={require('../assets/back_arrow.png')} style={styles.backArrowImage} />
         </View>
@@ -120,7 +134,7 @@ const Register = () => {
           </TouchableOpacity>
         </View>
         {/* Register Button */}
-        <TouchableOpacity style={styles.registerButton}>
+        <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
           <LinearGradient
             colors={["#FFE066", "#FFD60A", "#B89B2B"]}
             start={{ x: 0, y: 0 }}
@@ -133,7 +147,7 @@ const Register = () => {
         {/* Login Link */}
         <View style={styles.loginRow}>
           <Text style={styles.loginText}>Already have an account? </Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={handleLogin}>
             <Text style={styles.loginLink}>Login</Text>
           </TouchableOpacity>
         </View>

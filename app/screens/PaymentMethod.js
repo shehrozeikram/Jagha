@@ -10,26 +10,40 @@ import {
   TextInput,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 
 const PaymentMethod = () => {
+  const navigation = useNavigation();
   const [tab, setTab] = useState('card');
   const [name, setName] = useState('Ali Khan');
   const [number, setNumber] = useState('1222 3443 9881 1222');
   const [expiry, setExpiry] = useState('11/05/2023');
   const [cvv, setCvv] = useState('');
 
+  const handleBack = () => {
+    navigation.goBack();
+  };
+
+  const handleSkip = () => {
+    navigation.navigate('ProfileInfo');
+  };
+
+  const handleNext = () => {
+    navigation.navigate('ProfileInfo');
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Back Button */}
-      <TouchableOpacity style={styles.backButton}>
+      <TouchableOpacity style={styles.backButton} onPress={handleBack}>
         <View style={styles.backCircle}>
           <Image source={require('../assets/back_arrow.png')} style={styles.backArrowImage} />
         </View>
       </TouchableOpacity>
       {/* Skip Button */}
-      <TouchableOpacity style={styles.skipButton}>
+      <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
         <View style={styles.skipCircle}>
           <Text style={styles.skipText}>skip</Text>
         </View>
@@ -128,7 +142,7 @@ const PaymentMethod = () => {
           </View>
         </View>
         {/* Next Button */}
-        <TouchableOpacity style={styles.nextButton}>
+        <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
           <LinearGradient
             colors={["#FFE066", "#FFD60A", "#B89B2B"]}
             start={{ x: 0, y: 0 }}

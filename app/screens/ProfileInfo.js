@@ -5,6 +5,7 @@ import {
   View,
   TouchableOpacity,
   Image,
+  TextInput,
   Dimensions,
   SafeAreaView,
 } from 'react-native';
@@ -13,20 +14,22 @@ import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 
-const Location = () => {
+const ProfileInfo = () => {
   const navigation = useNavigation();
-  const [locationDetail, setLocationDetail] = useState('');
+  const [name, setName] = useState('Ali Khan');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('jonathan@email.com');
 
   const handleBack = () => {
     navigation.goBack();
   };
 
   const handleSkip = () => {
-    navigation.navigate('RealEstateType');
+    navigation.navigate('AccountCreated');
   };
 
   const handleNext = () => {
-    navigation.navigate('RealEstateType');
+    navigation.navigate('AccountCreated');
   };
 
   return (
@@ -44,26 +47,49 @@ const Location = () => {
         </View>
       </TouchableOpacity>
       <View style={styles.content}>
-        <Text style={styles.locationTitle}>
-          Add your <Text style={styles.goldText}>location</Text>
+        <Text style={styles.title}>
+          Fill your <Text style={styles.goldText}>information</Text> below
         </Text>
         <Text style={styles.subtitle}>You can edit this later on your account setting.</Text>
-        {/* Map Image Placeholder */}
-        <View style={styles.mapContainer}>
-          <Image source={require('../assets/map.png')} style={styles.mapImage} />
-          <TouchableOpacity style={styles.selectOnMapButton}>
-            <Text style={styles.selectOnMapText}>select on map</Text>
+        {/* Profile Image with Edit */}
+        <View style={styles.profileWrapper}>
+          <Image source={require('../assets/component.png')} style={styles.profileImage} />
+          <TouchableOpacity style={styles.editButton}>
+            <Image source={require('../assets/pencil.png')} style={styles.editIcon} />
           </TouchableOpacity>
         </View>
-        {/* Location Detail Input */}
+        {/* Input Fields */}
         <View style={styles.inputContainer}>
-          <Image source={require('../assets/location_icon.png')} style={styles.inputIcon} />
-          <Text style={styles.inputLabel}>Location detail</Text>
-          <Image source={require('../assets/chevron_right.png')} style={styles.chevronIcon} />
+          <Image source={require('../assets/user_icon.png')} style={styles.inputIcon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Ali Khan"
+            placeholderTextColor="#252B5C"
+            value={name}
+            onChangeText={setName}
+          />
         </View>
-        {/* Progress Indicator */}
-        <View style={styles.progressBarContainer}>
-          <Image source={require('../assets/next.png')} style={styles.progressBarNextIcon} />
+        <View style={styles.inputContainer}>
+          <Image source={require('../assets/phone_icon.png')} style={styles.inputIcon} />
+          <TextInput
+            style={styles.input}
+            placeholder="mobile number"
+            placeholderTextColor="#7B7B93"
+            value={phone}
+            onChangeText={setPhone}
+            keyboardType="phone-pad"
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Image source={require('../assets/email_icon.png')} style={styles.inputIcon} />
+          <TextInput
+            style={styles.input}
+            placeholder="jonathan@email.com"
+            placeholderTextColor="#7B7B93"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+          />
         </View>
         {/* Next Button */}
         <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
@@ -73,15 +99,17 @@ const Location = () => {
             end={{ x: 1, y: 0 }}
             style={styles.nextButtonGradient}
           >
-            <View style={styles.nextButtonContent}>
-              <Text style={styles.nextButtonText}>Next</Text>
-            </View>
+            <Text style={styles.nextButtonText}>Next</Text>
           </LinearGradient>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 };
+
+const PROFILE_SIZE = 120;
+const EDIT_SIZE = 36;
+const CARD_WIDTH = width - 48;
 
 const styles = StyleSheet.create({
   container: {
@@ -131,51 +159,54 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 120,
   },
-  locationTitle: {
+  title: {
     fontSize: 28,
     color: '#252B5C',
-    fontWeight: '600',
+    fontWeight: '700',
     marginBottom: 8,
+    lineHeight: 34,
   },
   goldText: {
     color: '#B89B2B',
     fontWeight: 'bold',
+    fontSize: 28,
   },
   subtitle: {
     fontSize: 15,
     color: '#7B7B93',
-    marginBottom: 18,
+    marginBottom: 32,
   },
-  mapContainer: {
-    width: '100%',
-    height: 260,
-    borderRadius: 16,
-    overflow: 'hidden',
-    marginBottom: 18,
-    backgroundColor: '#E5E5EA',
+  profileWrapper: {
+    alignSelf: 'center',
+    marginBottom: 32,
+  },
+  profileImage: {
+    width: PROFILE_SIZE,
+    height: PROFILE_SIZE,
+    borderRadius: PROFILE_SIZE / 2,
+    backgroundColor: '#F5F5F7',
     alignItems: 'center',
     justifyContent: 'center',
+    resizeMode: 'contain',
   },
-  mapImage: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 16,
-  },
-  selectOnMapButton: {
+  editButton: {
     position: 'absolute',
-    bottom: 0,
-    left: 0,
     right: 0,
-    backgroundColor: 'rgba(255,255,255,0.7)',
-    borderBottomLeftRadius: 16,
-    borderBottomRightRadius: 16,
+    bottom: 8,
+    width: EDIT_SIZE,
+    height: EDIT_SIZE,
+    borderRadius: EDIT_SIZE / 2,
+    backgroundColor: '#252B5C',
     alignItems: 'center',
-    paddingVertical: 10,
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: '#fff',
   },
-  selectOnMapText: {
-    color: '#7B7B93',
-    fontWeight: '600',
-    fontSize: 15,
+  editIcon: {
+    width: 18,
+    height: 18,
+    tintColor: '#fff',
+    resizeMode: 'contain',
   },
   inputContainer: {
     flexDirection: 'row',
@@ -183,7 +214,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F7',
     borderRadius: 12,
     paddingHorizontal: 12,
-    marginBottom: 32,
+    marginBottom: 16,
     height: 54,
   },
   inputIcon: {
@@ -193,28 +224,10 @@ const styles = StyleSheet.create({
     tintColor: '#252B5C',
     opacity: 0.7,
   },
-  inputLabel: {
+  input: {
     flex: 1,
     fontSize: 16,
     color: '#252B5C',
-    opacity: 0.7,
-  },
-  chevronIcon: {
-    width: 18,
-    height: 18,
-    marginLeft: 8,
-    tintColor: '#252B5C',
-    opacity: 0.7,
-  },
-  progressBarContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 32,
-  },
-  progressBarNextIcon: {
-    width: 80,
-    height: 80,
-    resizeMode: 'contain',
   },
   nextButton: {
     borderRadius: 14,
@@ -222,6 +235,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
     height: 56,
+    marginTop: 16,
   },
   nextButtonGradient: {
     borderRadius: 14,
@@ -230,11 +244,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 56,
   },
-  nextButtonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   nextButtonText: {
     color: '#117C3E',
     fontSize: 20,
@@ -242,12 +251,6 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     textAlign: 'center',
   },
-  nextIcon: {
-    width: 22,
-    height: 22,
-    marginLeft: 10,
-    resizeMode: 'contain',
-  },
 });
 
-export default Location; 
+export default ProfileInfo; 

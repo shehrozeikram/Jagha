@@ -10,6 +10,7 @@ import {
   FlatList,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 
@@ -37,12 +38,25 @@ const types = [
 ];
 
 const RealEstateType = () => {
+  const navigation = useNavigation();
   const [selected, setSelected] = useState([]);
 
   const toggleType = (key) => {
     setSelected((prev) =>
       prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
     );
+  };
+
+  const handleBack = () => {
+    navigation.goBack();
+  };
+
+  const handleSkip = () => {
+    navigation.navigate('PaymentMethod');
+  };
+
+  const handleNext = () => {
+    navigation.navigate('PaymentMethod');
   };
 
   const renderCard = ({ item }) => {
@@ -69,13 +83,13 @@ const RealEstateType = () => {
   return (
     <SafeAreaView style={styles.container}>
       {/* Back Button */}
-      <TouchableOpacity style={styles.backButton}>
+      <TouchableOpacity style={styles.backButton} onPress={handleBack}>
         <View style={styles.backCircle}>
           <Image source={require('../assets/back_arrow.png')} style={styles.backArrowImage} />
         </View>
       </TouchableOpacity>
       {/* Skip Button */}
-      <TouchableOpacity style={styles.skipButton}>
+      <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
         <View style={styles.skipCircle}>
           <Text style={styles.skipText}>skip</Text>
         </View>
@@ -91,7 +105,7 @@ const RealEstateType = () => {
           {types.map((item, idx) => renderCard({ item, index: idx }))}
         </View>
         {/* Next Button */}
-        <TouchableOpacity style={styles.nextButton}>
+        <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
           <LinearGradient
             colors={["#FFE066", "#FFD60A", "#B89B2B"]}
             start={{ x: 0, y: 0 }}

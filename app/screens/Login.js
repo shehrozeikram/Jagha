@@ -10,13 +10,23 @@ import {
   SafeAreaView,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 
 const Login = () => {
+  const navigation = useNavigation();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const handleLogin = () => {
+    navigation.navigate('Register');
+  };
+
+  const handleRegister = () => {
+    navigation.navigate('Register');
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -66,7 +76,7 @@ const Login = () => {
           </TouchableOpacity>
         </View>
         {/* Login Button */}
-        <TouchableOpacity style={styles.loginButton}>
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
           <LinearGradient
             colors={["#FFE066", "#FFD60A", "#B89B2B"]}
             start={{ x: 0, y: 0 }}
@@ -94,7 +104,7 @@ const Login = () => {
         {/* Register Link */}
         <View style={styles.registerRow}>
           <Text style={styles.registerText}>Don't have an account? </Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={handleRegister}>
             <Text style={styles.registerLink}>Register</Text>
           </TouchableOpacity>
         </View>
