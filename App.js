@@ -18,6 +18,7 @@ import RealEstateType from './app/screens/RealEstateType';
 import PaymentMethod from './app/screens/PaymentMethod';
 import ProfileInfo from './app/screens/ProfileInfo';
 import AccountCreated from './app/screens/AccountCreated';
+import Home from './app/screens/Home';
 
 const Stack = createStackNavigator();
 
@@ -55,6 +56,7 @@ const App = () => {
           <Stack.Screen name="RealEstateType" component={RealEstateType} />
           <Stack.Screen name="PaymentMethod" component={PaymentMethod} />
           <Stack.Screen name="ProfileInfo" component={ProfileInfo} />
+          <Stack.Screen name="Home" component={Home} />
           <Stack.Screen 
             name="AccountCreated" 
             component={AccountCreated}

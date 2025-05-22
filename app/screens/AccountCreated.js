@@ -17,7 +17,7 @@ const AccountCreated = () => {
   const navigation = useNavigation();
 
   const handleFinish = () => {
-    navigation.navigate('Login');
+    navigation.navigate('Home');
   };
 
   return (
@@ -29,7 +29,7 @@ const AccountCreated = () => {
         <View style={styles.handle} />
         <View style={styles.checkmarkWrapper}>
           <View style={styles.checkmarkCircle}>
-            <Image source={require('../assets/checkmark.png')} style={styles.checkmarkIcon} />
+            <Image source={require('../assets/vector.png')} style={styles.checkmarkIcon} />
           </View>
         </View>
         <Text style={styles.title}>
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#2ECC71',
+    backgroundColor: '#0F7C3D',
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#2ECC71',
