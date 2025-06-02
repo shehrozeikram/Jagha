@@ -19,6 +19,11 @@ import PaymentMethod from './app/screens/PaymentMethod';
 import ProfileInfo from './app/screens/ProfileInfo';
 import AccountCreated from './app/screens/AccountCreated';
 import Home from './app/screens/Home';
+import FeaturedEstate from './app/screens/FeaturedEstate';
+import TopLocation from './app/screens/TopLocation';
+import TopLocationDetails from './app/screens/TopLocationDetails';
+import TopAgent from './app/screens/TopAgent';
+import TopAgentProfile from './app/screens/TopAgentProfile';
 
 const Stack = createStackNavigator();
 
@@ -57,6 +62,11 @@ const App = () => {
           <Stack.Screen name="PaymentMethod" component={PaymentMethod} />
           <Stack.Screen name="ProfileInfo" component={ProfileInfo} />
           <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen name="FeaturedEstate" component={FeaturedEstate} />
+          <Stack.Screen name="TopLocation" component={TopLocation} />
+          <Stack.Screen name="TopLocationDetails" component={TopLocationDetails} />
+          <Stack.Screen name="TopAgent" component={TopAgent} />
+          <Stack.Screen name="TopAgentProfile" component={TopAgentProfile} />
           <Stack.Screen 
             name="AccountCreated" 
             component={AccountCreated}

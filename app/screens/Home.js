@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,10 +11,14 @@ import {
   SafeAreaView,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 
 const Home = () => {
+  const [selectedTab, setSelectedTab] = useState('Home');
+  const navigation = useNavigation();
+
   return (
     <SafeAreaView style={styles.container}>
       <View
@@ -97,20 +101,22 @@ const Home = () => {
         </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginLeft: 24, marginBottom: 12}}>
           <View style={{flexDirection: 'row'}}>
-            <View style={{
-              width: 268,
-              height: 156,
-              borderRadius: 10,
-              backgroundColor: '#F5F4F8',
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginRight: 16,
-              padding: 10,
-              shadowColor: '#000',
-              shadowOpacity: 0.04,
-              shadowRadius: 4,
-              elevation: 1,
-            }}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('FeaturedEstate')}
+              style={{
+                width: 268,
+                height: 156,
+                borderRadius: 10,
+                backgroundColor: '#F5F4F8',
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginRight: 16,
+                padding: 10,
+                shadowColor: '#000',
+                shadowOpacity: 0.04,
+                shadowRadius: 4,
+                elevation: 1,
+              }}>
               {/* Image and heart icon */}
               <View style={{position: 'relative'}}>
                 <Image source={require('../assets/real_estate_land.png')} style={{width: 100, height: 136, borderRadius: 10}} />
@@ -131,21 +137,23 @@ const Home = () => {
                 </View>
                 <Text style={{color: '#252B5C', fontWeight: '700', fontSize: 13, marginTop: 8}}>0.5-2 Marla</Text>
               </View>
-            </View>
-            <View style={{
-              width: 268,
-              height: 156,
-              borderRadius: 10,
-              backgroundColor: '#F5F4F8',
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginRight: 16,
-              padding: 10,
-              shadowColor: '#000',
-              shadowOpacity: 0.04,
-              shadowRadius: 4,
-              elevation: 1,
-            }}>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('FeaturedEstate')}
+              style={{
+                width: 268,
+                height: 156,
+                borderRadius: 10,
+                backgroundColor: '#F5F4F8',
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginRight: 16,
+                padding: 10,
+                shadowColor: '#000',
+                shadowOpacity: 0.04,
+                shadowRadius: 4,
+                elevation: 1,
+              }}>
               {/* Image and heart icon */}
               <View style={{position: 'relative'}}>
                 <Image source={{uri: 'https://source.unsplash.com/400x300/?apartment,2'}} style={{width: 100, height: 136, borderRadius: 10}} />
@@ -166,13 +174,15 @@ const Home = () => {
                 </View>
                 <Text style={{color: '#252B5C', fontWeight: '700', fontSize: 13, marginTop: 8}}>1-3 Marla</Text>
               </View>
-            </View>
+            </TouchableOpacity>
           </View>
         </ScrollView>
         {/* Top Locations */}
         <View style={styles.sectionRow}>
           <Text style={styles.sectionTitle}>Top Locations</Text>
-          <TouchableOpacity><Text style={styles.sectionLink}>explore</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('TopLocation')}>
+            <Text style={styles.sectionLink}>explore</Text>
+          </TouchableOpacity>
         </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginHorizontal: 24, marginBottom: 12}}>
           <View style={styles.locationPill}>
@@ -195,7 +205,7 @@ const Home = () => {
         {/* Top Agent */}
         <View style={styles.sectionRow}>
           <Text style={styles.sectionTitle}>Top Agent</Text>
-          <TouchableOpacity><Text style={styles.sectionLink}>explore</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('TopAgent')}><Text style={styles.sectionLink}>explore</Text></TouchableOpacity>
         </View>
         <View style={styles.agentsRow}>
           <View style={styles.agentCircle}><Image source={{uri: 'https://randomuser.me/api/portraits/women/44.jpg'}} style={styles.agentImg} /><Text style={styles.agentName}>Ayesha K.</Text></View>
@@ -252,26 +262,58 @@ const Home = () => {
       </ScrollView>
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navBtnActive}>
-          <Image source={require('../assets/house-active.png')} style={styles.navIconActive} />
-          <Text style={styles.navTextActive}>Home</Text>
+        <TouchableOpacity 
+          style={styles.navBtn} 
+          onPress={() => setSelectedTab('Home')}
+        >
+          <Image 
+            source={require('../assets/house-active.png')} 
+            style={[styles.navIcon, selectedTab === 'Home' && { tintColor: '#B89B2B' }]} 
+          />
+          <Text style={[styles.navText, selectedTab === 'Home' && { color: '#B89B2B', fontWeight: '700' }]}>
+            Home
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navBtn}>
-          <Image source={require('../assets/nav_icon.png')} style={styles.navIcon} />
-          <Text style={styles.navText}>Investors</Text>
+        <TouchableOpacity 
+          style={styles.navBtn}
+          onPress={() => setSelectedTab('Investors')}
+        >
+          <Image 
+            source={require('../assets/nav_icon.png')} 
+            style={[styles.navIcon, selectedTab === 'Investors' && { tintColor: '#B89B2B' }]} 
+          />
+          <Text style={[styles.navText, selectedTab === 'Investors' && { color: '#B89B2B', fontWeight: '700' }]}>
+            Investors
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navBtnCenter}>
           <View style={styles.navCenterCircle}>
             <Image source={require('../assets/zoom.png')} style={styles.navCenterIcon} />
           </View>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navBtn}>
-          <Image source={require('../assets/heart.png')} style={styles.navIcon} />
-          <Text style={styles.navText}>Favorites</Text>
+        <TouchableOpacity 
+          style={styles.navBtn}
+          onPress={() => setSelectedTab('Favorites')}
+        >
+          <Image 
+            source={require('../assets/heart.png')} 
+            style={[styles.navIcon, selectedTab === 'Favorites' && { tintColor: '#B89B2B' }]} 
+          />
+          <Text style={[styles.navText, selectedTab === 'Favorites' && { color: '#B89B2B', fontWeight: '700' }]}>
+            Favorites
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navBtn}>
-          <Image source={require('../assets/profile.png')} style={styles.navIcon} />
-          <Text style={styles.navText}>Profile</Text>
+        <TouchableOpacity 
+          style={styles.navBtn}
+          onPress={() => navigation.navigate('TopAgentProfile')}
+        >
+          <Image 
+            source={require('../assets/profile.png')} 
+            style={[styles.navIcon, selectedTab === 'Profile' && { tintColor: '#B89B2B' }]} 
+          />
+          <Text style={[styles.navText, selectedTab === 'Profile' && { color: '#B89B2B', fontWeight: '700' }]}>
+            Profile
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -549,7 +591,7 @@ const styles = StyleSheet.create({
   navBtn: { alignItems: 'center', justifyContent: 'center', flex: 1 },
   navBtnActive: { alignItems: 'center', justifyContent: 'center', flex: 1 },
   navIcon: { width: 24, height: 24, tintColor: '#7B7B93' },
-  navIconActive: { width: 24, height: 24, tintColor: '#B89B2B' },
+  navIconActive: { tintColor: '#B89B2B' },
   navText: { color: '#7B7B93', fontSize: 12, fontWeight: '600', marginTop: 2 },
   navTextActive: { color: '#B89B2B', fontSize: 12, fontWeight: '700', marginTop: 2 },
   navBtnCenter: { alignItems: 'center', justifyContent: 'center', flex: 1 },
