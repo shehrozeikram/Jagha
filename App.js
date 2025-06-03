@@ -4,11 +4,13 @@ import {
   StyleSheet,
   Text,
   View,
+  Image,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import SplashScreen from './app/screens/SplashScreen';
 import Login from './app/screens/Login';
@@ -24,8 +26,117 @@ import TopLocation from './app/screens/TopLocation';
 import TopLocationDetails from './app/screens/TopLocationDetails';
 import TopAgent from './app/screens/TopAgent';
 import TopAgentProfile from './app/screens/TopAgentProfile';
+import Favorites from './app/screens/Favorites';
+import Investors from './app/screens/Investors';
 
 const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+
+const TabNavigator = () => {
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          position: 'absolute',
+          height: 70,
+          backgroundColor: '#fff',
+          borderTopLeftRadius: 18,
+          borderTopRightRadius: 18,
+          shadowColor: '#000',
+          shadowOpacity: 0.06,
+          shadowRadius: 8,
+          elevation: 8,
+          paddingBottom: 8,
+          paddingTop: 8,
+        },
+        tabBarActiveTintColor: '#B89B2B',
+        tabBarInactiveTintColor: '#7B7B93',
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '600',
+          marginTop: 2,
+        },
+      }}
+    >
+      <Tab.Screen 
+        name="HomeTab" 
+        component={Home}
+        options={{
+          tabBarLabel: 'Home',
+          tabBarIcon: ({ color }) => (
+            <Image 
+              source={require('./app/assets/house-active.png')} 
+              style={{ width: 24, height: 24, tintColor: color }} 
+            />
+          ),
+        }}
+      />
+      <Tab.Screen 
+        name="InvestorsTab" 
+        component={Investors}
+        options={{
+          tabBarLabel: 'Investors',
+          tabBarIcon: ({ color }) => (
+            <Image 
+              source={require('./app/assets/nav_icon.png')} 
+              style={{ width: 24, height: 24, tintColor: color }} 
+            />
+          ),
+        }}
+      />
+      <Tab.Screen 
+        name="SearchTab" 
+        component={Home} // Replace with actual Search screen
+        options={{
+          tabBarLabel: '',
+          tabBarIcon: () => (
+            <View style={{
+              width: 48,
+              height: 48,
+              borderRadius: 24,
+              backgroundColor: '#B79C35',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginTop: -24,
+            }}>
+              <Image 
+                source={require('./app/assets/zoom.png')} 
+                style={{ width: 28, height: 28, tintColor: '#fff' }} 
+              />
+            </View>
+          ),
+        }}
+      />
+      <Tab.Screen 
+        name="FavoritesTab" 
+        component={Favorites}
+        options={{
+          tabBarLabel: 'Favorites',
+          tabBarIcon: ({ color }) => (
+            <Image 
+              source={require('./app/assets/heart.png')} 
+              style={{ width: 24, height: 24, tintColor: color }} 
+            />
+          ),
+        }}
+      />
+      <Tab.Screen 
+        name="ProfileTab" 
+        component={TopAgentProfile}
+        options={{
+          tabBarLabel: 'Profile',
+          tabBarIcon: ({ color }) => (
+            <Image 
+              source={require('./app/assets/profile.png')} 
+              style={{ width: 24, height: 24, tintColor: color }} 
+            />
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
+};
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -61,7 +172,7 @@ const App = () => {
           <Stack.Screen name="RealEstateType" component={RealEstateType} />
           <Stack.Screen name="PaymentMethod" component={PaymentMethod} />
           <Stack.Screen name="ProfileInfo" component={ProfileInfo} />
-          <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen name="MainTabs" component={TabNavigator} />
           <Stack.Screen name="FeaturedEstate" component={FeaturedEstate} />
           <Stack.Screen name="TopLocation" component={TopLocation} />
           <Stack.Screen name="TopLocationDetails" component={TopLocationDetails} />

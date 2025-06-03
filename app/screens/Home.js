@@ -260,62 +260,6 @@ const Home = () => {
           </View>
         </ScrollView>
       </ScrollView>
-      {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity 
-          style={styles.navBtn} 
-          onPress={() => setSelectedTab('Home')}
-        >
-          <Image 
-            source={require('../assets/house-active.png')} 
-            style={[styles.navIcon, selectedTab === 'Home' && { tintColor: '#B89B2B' }]} 
-          />
-          <Text style={[styles.navText, selectedTab === 'Home' && { color: '#B89B2B', fontWeight: '700' }]}>
-            Home
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.navBtn}
-          onPress={() => setSelectedTab('Investors')}
-        >
-          <Image 
-            source={require('../assets/nav_icon.png')} 
-            style={[styles.navIcon, selectedTab === 'Investors' && { tintColor: '#B89B2B' }]} 
-          />
-          <Text style={[styles.navText, selectedTab === 'Investors' && { color: '#B89B2B', fontWeight: '700' }]}>
-            Investors
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navBtnCenter}>
-          <View style={styles.navCenterCircle}>
-            <Image source={require('../assets/zoom.png')} style={styles.navCenterIcon} />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.navBtn}
-          onPress={() => setSelectedTab('Favorites')}
-        >
-          <Image 
-            source={require('../assets/heart.png')} 
-            style={[styles.navIcon, selectedTab === 'Favorites' && { tintColor: '#B89B2B' }]} 
-          />
-          <Text style={[styles.navText, selectedTab === 'Favorites' && { color: '#B89B2B', fontWeight: '700' }]}>
-            Favorites
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.navBtn}
-          onPress={() => navigation.navigate('TopAgentProfile')}
-        >
-          <Image 
-            source={require('../assets/profile.png')} 
-            style={[styles.navIcon, selectedTab === 'Profile' && { tintColor: '#B89B2B' }]} 
-          />
-          <Text style={[styles.navText, selectedTab === 'Profile' && { color: '#B89B2B', fontWeight: '700' }]}>
-            Profile
-          </Text>
-        </TouchableOpacity>
-      </View>
     </SafeAreaView>
   );
 };
@@ -587,16 +531,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
   },
-  bottomNav: { position: 'absolute', left: 0, right: 0, bottom: 0, height: 70, backgroundColor: '#fff', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 18, borderTopLeftRadius: 18, borderTopRightRadius: 18, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 8, elevation: 8 },
-  navBtn: { alignItems: 'center', justifyContent: 'center', flex: 1 },
-  navBtnActive: { alignItems: 'center', justifyContent: 'center', flex: 1 },
-  navIcon: { width: 24, height: 24, tintColor: '#7B7B93' },
-  navIconActive: { tintColor: '#B89B2B' },
-  navText: { color: '#7B7B93', fontSize: 12, fontWeight: '600', marginTop: 2 },
-  navTextActive: { color: '#B89B2B', fontSize: 12, fontWeight: '700', marginTop: 2 },
-  navBtnCenter: { alignItems: 'center', justifyContent: 'center', flex: 1 },
-  navCenterCircle: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#B79C35', alignItems: 'center', justifyContent: 'center', marginTop: -24 },
-  navCenterIcon: { width: 28, height: 28, tintColor: '#fff' },
   locationPill: {
     flexDirection: 'row',
     alignItems: 'center',

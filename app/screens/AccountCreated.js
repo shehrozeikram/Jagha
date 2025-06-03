@@ -17,7 +17,7 @@ const AccountCreated = () => {
   const navigation = useNavigation();
 
   const handleFinish = () => {
-    navigation.navigate('Home');
+    navigation.navigate('MainTabs');
   };
 
   return (
