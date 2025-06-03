@@ -15,9 +15,95 @@ import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 
+const listings = [
+  {
+    id: 1,
+    image: require('../assets/real_estate_residential.png'),
+    price: '50 Lac to 1 Crore',
+    location: 'Islamabad',
+    type: 'House',
+    size: '5 - 10 Marla',
+    featured: true,
+  },
+  {
+    id: 2,
+    image: require('../assets/real_estate_commercial.png'),
+    price: '60 Lac to 1.2 Crore',
+    location: 'Lahore',
+    type: 'Apartment',
+    size: '1 - 3 Marla',
+    featured: true,
+  },
+  {
+    id: 3,
+    image: require('../assets/real_estate_land.png'),
+    price: '1.5 Crore',
+    location: 'Karachi',
+    type: 'Farm House',
+    size: '10 Marla',
+    featured: false,
+  },
+  {
+    id: 4,
+    image: require('../assets/real_estate_residential.png'),
+    price: '80 Lac',
+    location: 'Rawalpindi',
+    type: 'House',
+    size: '7 Marla',
+    featured: false,
+  },
+];
+
+const categoryTabs = ['All', 'House', 'Apartment', 'Farm House'];
+
+const topCards = [
+  {
+    id: 'farmhouse',
+    image: require('../assets/real_estate_land.png'),
+    title: 'Farm House',
+    desc: 'Recently Added in Islamabad',
+    badge: 'Featured',
+    type: 'Farm House',
+  },
+  {
+    id: 'land',
+    image: require('../assets/real_estate_land.png'),
+    title: 'Land',
+    desc: 'Recently Added Land in Islamabad',
+    badge: 'Land',
+    type: 'Land',
+  },
+  {
+    id: 'house1',
+    image: require('../assets/real_estate_residential.png'),
+    title: 'House',
+    desc: 'Modern House in Lahore',
+    badge: 'House',
+    type: 'House',
+  },
+  {
+    id: 'apartment1',
+    image: require('../assets/real_estate_commercial.png'),
+    title: 'Apartment',
+    desc: 'Luxury Apartment in Karachi',
+    badge: 'Apartment',
+    type: 'Apartment',
+  },
+];
+
 const Home = () => {
-  const [selectedTab, setSelectedTab] = useState('Home');
+  const [selectedCategory, setSelectedCategory] = useState('All');
   const navigation = useNavigation();
+
+  // Filter listings based on selected category
+  const filteredListings = selectedCategory === 'All'
+    ? listings
+    : listings.filter(l => l.type === selectedCategory);
+
+  // Filter top cards based on selected category
+  const filteredTopCards = selectedCategory === 'All'
+    ? topCards.filter(card => card.type === 'Farm House' || card.type === 'Land')
+    : topCards.filter(card => card.type === selectedCategory);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -66,115 +152,123 @@ const Home = () => {
         </View>
         {/* Category Tabs */}
         <View style={styles.tabsRow}>
-          <TouchableOpacity style={styles.tabActive}><Text style={styles.tabActiveText}>All</Text></TouchableOpacity>
-          <TouchableOpacity style={styles.tab}><Text style={styles.tabText}>House</Text></TouchableOpacity>
-          <TouchableOpacity style={styles.tab}><Text style={styles.tabText}>Apartment</Text></TouchableOpacity>
-          <TouchableOpacity style={styles.tab}><Text style={styles.tabText}>Farm House</Text></TouchableOpacity>
+          {categoryTabs.map(tab => (
+            <TouchableOpacity
+              key={tab}
+              style={selectedCategory === tab ? styles.tabActive : styles.tab}
+              onPress={() => setSelectedCategory(tab)}
+            >
+              <Text style={selectedCategory === tab ? styles.tabActiveText : styles.tabText}>{tab}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
-        {/* Featured Cards */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.featuredScroll}>
-          <View style={styles.featuredCard}>
-            <Image source={require('../assets/real_estate_land.png')} style={styles.featuredImg} />
-            {/* Overlay content */}
-            <View style={styles.featuredOverlay}>
-              <Text style={styles.featuredTitleOverlay}>Farm House</Text>
-              <Text style={styles.featuredDescOverlay}>Recently Added in Islamabad</Text>
-              <View style={styles.featuredBadgeOverlay}><Text style={styles.featuredBadgeTextOverlay}>Featured</Text></View>
-              <TouchableOpacity style={styles.detailsBtnOverlay}><Text style={styles.detailsBtnTextOverlay}>Details</Text></TouchableOpacity>
-            </View>
-          </View>
-          <View style={styles.featuredCard}>
-            <Image source={require('../assets/real_estate_land.png')} style={styles.featuredImg} />
-            {/* Overlay content */}
-            <View style={styles.featuredOverlay}>
-              <Text style={styles.featuredTitleOverlay}>Land</Text>
-              <Text style={styles.featuredDescOverlay}>Recently Added Land in Islamabad</Text>
-              <View style={styles.featuredBadgeOverlay}><Text style={styles.featuredBadgeTextOverlay}>Land</Text></View>
-              <TouchableOpacity style={styles.detailsBtnOverlay}><Text style={styles.detailsBtnTextOverlay}>Details</Text></TouchableOpacity>
-            </View>
-          </View>
-        </ScrollView>
-        {/* Featured Estates */}
+        {/* Top Card Section: Static for All, filtered listings for other tabs */}
+        {selectedCategory === 'All' ? (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.featuredScroll}>
+            {topCards.filter(card => card.type === 'Farm House' || card.type === 'Land').map(card => (
+              <View key={card.id} style={styles.featuredCard}>
+                <Image source={card.image} style={styles.featuredImg} />
+                {/* Overlay content */}
+                <View style={styles.featuredOverlay}>
+                  <Text style={styles.featuredTitleOverlay}>{card.title}</Text>
+                  <Text style={styles.featuredDescOverlay}>{card.desc}</Text>
+                  <View style={styles.featuredBadgeOverlay}><Text style={styles.featuredBadgeTextOverlay}>{card.badge}</Text></View>
+                  <TouchableOpacity style={styles.detailsBtnOverlay}><Text style={styles.detailsBtnTextOverlay}>Details</Text></TouchableOpacity>
+                </View>
+              </View>
+            ))}
+          </ScrollView>
+        ) : (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.featuredScroll}>
+            {filteredListings.map(listing => (
+              <TouchableOpacity
+                key={listing.id}
+                onPress={() => navigation.navigate('FeaturedEstate', { listing })}
+                style={{
+                  width: 268,
+                  height: 156,
+                  borderRadius: 10,
+                  backgroundColor: '#F5F4F8',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginRight: 16,
+                  padding: 10,
+                  shadowColor: '#000',
+                  shadowOpacity: 0.04,
+                  shadowRadius: 4,
+                  elevation: 1,
+                }}>
+                {/* Image and heart icon */}
+                <View style={{position: 'relative'}}>
+                  <Image source={listing.image} style={{width: 100, height: 136, borderRadius: 10}} />
+                  <View style={{position: 'absolute', top: 8, left: 8, backgroundColor: '#7ED957', borderRadius: 16, width: 28, height: 28, alignItems: 'center', justifyContent: 'center'}}>
+                    <Text style={{color: 'white', fontWeight: 'bold', fontSize: 18}}>♥</Text>
+                  </View>
+                  <View style={{position: 'absolute', bottom: 8, left: 8, backgroundColor: '#252B5C', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 2}}>
+                    <Text style={{color: 'white', fontSize: 11, fontWeight: '600'}}>{listing.type}</Text>
+                  </View>
+                </View>
+                {/* Details */}
+                <View style={{flex: 1, marginLeft: 12, justifyContent: 'center'}}>
+                  <Text style={{color: '#252B5C', fontWeight: '700', fontSize: 16, marginBottom: 2}}>{listing.price}</Text>
+                  <Text style={{color: '#7B7B93', fontSize: 13, marginBottom: 2}}>Gallery</Text>
+                  <View style={{flexDirection: 'row', alignItems: 'center', marginBottom: 2}}>
+                    <Text style={{color: '#117C3E', fontSize: 13}}>📍</Text>
+                    <Text style={{color: '#7B7B93', fontSize: 13, marginLeft: 4}}>{listing.location}</Text>
+                  </View>
+                  <Text style={{color: '#252B5C', fontWeight: '700', fontSize: 13, marginTop: 8}}>{listing.size}</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        )}
+        {/* Featured Estates Section: Always show all listings */}
         <View style={styles.sectionRow}>
           <Text style={styles.sectionTitle}>Featured Estates</Text>
           <TouchableOpacity><Text style={styles.sectionLink}>view all</Text></TouchableOpacity>
         </View>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginLeft: 24, marginBottom: 12}}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginLeft: 24, marginBottom: 16}}>
           <View style={{flexDirection: 'row'}}>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('FeaturedEstate')}
-              style={{
-                width: 268,
-                height: 156,
-                borderRadius: 10,
-                backgroundColor: '#F5F4F8',
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginRight: 16,
-                padding: 10,
-                shadowColor: '#000',
-                shadowOpacity: 0.04,
-                shadowRadius: 4,
-                elevation: 1,
-              }}>
-              {/* Image and heart icon */}
-              <View style={{position: 'relative'}}>
-                <Image source={require('../assets/real_estate_land.png')} style={{width: 100, height: 136, borderRadius: 10}} />
-                <View style={{position: 'absolute', top: 8, left: 8, backgroundColor: '#7ED957', borderRadius: 16, width: 28, height: 28, alignItems: 'center', justifyContent: 'center'}}>
-                  <Text style={{color: 'white', fontWeight: 'bold', fontSize: 18}}>♥</Text>
+            {listings.map(listing => (
+              <TouchableOpacity
+                key={listing.id}
+                onPress={() => navigation.navigate('FeaturedEstate', { listing })}
+                style={{
+                  width: 268,
+                  height: 156,
+                  borderRadius: 10,
+                  backgroundColor: '#F5F4F8',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginRight: 16,
+                  padding: 10,
+                  shadowColor: '#000',
+                  shadowOpacity: 0.04,
+                  shadowRadius: 4,
+                  elevation: 1,
+                }}>
+                {/* Image and heart icon */}
+                <View style={{position: 'relative'}}>
+                  <Image source={listing.image} style={{width: 100, height: 136, borderRadius: 10}} />
+                  <View style={{position: 'absolute', top: 8, left: 8, backgroundColor: '#7ED957', borderRadius: 16, width: 28, height: 28, alignItems: 'center', justifyContent: 'center'}}>
+                    <Text style={{color: 'white', fontWeight: 'bold', fontSize: 18}}>♥</Text>
+                  </View>
+                  <View style={{position: 'absolute', bottom: 8, left: 8, backgroundColor: '#252B5C', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 2}}>
+                    <Text style={{color: 'white', fontSize: 11, fontWeight: '600'}}>{listing.type}</Text>
+                  </View>
                 </View>
-                <View style={{position: 'absolute', bottom: 8, left: 8, backgroundColor: '#252B5C', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 2}}>
-                  <Text style={{color: 'white', fontSize: 11, fontWeight: '600'}}>Apartment</Text>
+                {/* Details */}
+                <View style={{flex: 1, marginLeft: 12, justifyContent: 'center'}}>
+                  <Text style={{color: '#252B5C', fontWeight: '700', fontSize: 16, marginBottom: 2}}>{listing.price}</Text>
+                  <Text style={{color: '#7B7B93', fontSize: 13, marginBottom: 2}}>Gallery</Text>
+                  <View style={{flexDirection: 'row', alignItems: 'center', marginBottom: 2}}>
+                    <Text style={{color: '#117C3E', fontSize: 13}}>📍</Text>
+                    <Text style={{color: '#7B7B93', fontSize: 13, marginLeft: 4}}>{listing.location}</Text>
+                  </View>
+                  <Text style={{color: '#252B5C', fontWeight: '700', fontSize: 13, marginTop: 8}}>{listing.size}</Text>
                 </View>
-              </View>
-              {/* Details */}
-              <View style={{flex: 1, marginLeft: 12, justifyContent: 'center'}}>
-                <Text style={{color: '#252B5C', fontWeight: '700', fontSize: 16, marginBottom: 2}}>50 Lac to 1 Crore</Text>
-                <Text style={{color: '#7B7B93', fontSize: 13, marginBottom: 2}}>Gallery</Text>
-                <View style={{flexDirection: 'row', alignItems: 'center', marginBottom: 2}}>
-                  <Text style={{color: '#117C3E', fontSize: 13}}>📍</Text>
-                  <Text style={{color: '#7B7B93', fontSize: 13, marginLeft: 4}}>Islamabad</Text>
-                </View>
-                <Text style={{color: '#252B5C', fontWeight: '700', fontSize: 13, marginTop: 8}}>0.5-2 Marla</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('FeaturedEstate')}
-              style={{
-                width: 268,
-                height: 156,
-                borderRadius: 10,
-                backgroundColor: '#F5F4F8',
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginRight: 16,
-                padding: 10,
-                shadowColor: '#000',
-                shadowOpacity: 0.04,
-                shadowRadius: 4,
-                elevation: 1,
-              }}>
-              {/* Image and heart icon */}
-              <View style={{position: 'relative'}}>
-                <Image source={{uri: 'https://source.unsplash.com/400x300/?apartment,2'}} style={{width: 100, height: 136, borderRadius: 10}} />
-                <View style={{position: 'absolute', top: 8, left: 8, backgroundColor: '#7ED957', borderRadius: 16, width: 28, height: 28, alignItems: 'center', justifyContent: 'center'}}>
-                  <Text style={{color: 'white', fontWeight: 'bold', fontSize: 18}}>♥</Text>
-                </View>
-                <View style={{position: 'absolute', bottom: 8, left: 8, backgroundColor: '#252B5C', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 2}}>
-                  <Text style={{color: 'white', fontSize: 11, fontWeight: '600'}}>Apartment</Text>
-                </View>
-              </View>
-              {/* Details */}
-              <View style={{flex: 1, marginLeft: 12, justifyContent: 'center'}}>
-                <Text style={{color: '#252B5C', fontWeight: '700', fontSize: 16, marginBottom: 2}}>60 Lac to 1.2 Crore</Text>
-                <Text style={{color: '#7B7B93', fontSize: 13, marginBottom: 2}}>Gallery</Text>
-                <View style={{flexDirection: 'row', alignItems: 'center', marginBottom: 2}}>
-                  <Text style={{color: '#117C3E', fontSize: 13}}>📍</Text>
-                  <Text style={{color: '#7B7B93', fontSize: 13, marginLeft: 4}}>Lahore</Text>
-                </View>
-                <Text style={{color: '#252B5C', fontWeight: '700', fontSize: 13, marginTop: 8}}>1-3 Marla</Text>
-              </View>
-            </TouchableOpacity>
+              </TouchableOpacity>
+            ))}
           </View>
         </ScrollView>
         {/* Top Locations */}

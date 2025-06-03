@@ -28,6 +28,7 @@ import TopAgent from './app/screens/TopAgent';
 import TopAgentProfile from './app/screens/TopAgentProfile';
 import Favorites from './app/screens/Favorites';
 import Investors from './app/screens/Investors';
+import Search from './app/screens/Search';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -87,7 +88,7 @@ const TabNavigator = () => {
       />
       <Tab.Screen 
         name="SearchTab" 
-        component={Home} // Replace with actual Search screen
+        component={Search}
         options={{
           tabBarLabel: '',
           tabBarIcon: () => (
