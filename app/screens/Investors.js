@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,11 +8,21 @@ import {
   FlatList,
   Dimensions,
   SafeAreaView,
+  TextInput,
+  ScrollView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 40) / 2;
+
+// Featured images for the grid
+const featuredImages = [
+  require('../assets/real_estate_commercial.png'),
+  require('../assets/real_estate_residential.png'),
+  require('../assets/real_estate_land.png'),
+  require('../assets/real_estate_industrial.png'),
+];
 
 // Mock data for investment properties
 const investmentProperties = [
@@ -76,6 +86,18 @@ const investmentProperties = [
 
 const Investors = () => {
   const navigation = useNavigation();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Filter properties based on search query
+  const filteredProperties = investmentProperties.filter(property => 
+    searchQuery.trim().length === 0 ||
+    property.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    property.price.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    property.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    property.size.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    property.roi.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    property.agent.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const renderProperty = ({ item }) => (
     <TouchableOpacity 
@@ -111,48 +133,102 @@ const Investors = () => {
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
+        {/* Header */}
         <View style={styles.headerRow}>
           <TouchableOpacity 
             style={styles.headerBtn} 
             onPress={() => navigation.goBack()}
           >
-            <View style={styles.headerCircle}>
-              <Text style={styles.backIcon}>←</Text>
-            </View>
+            <Image source={require('../assets/back_arrow.png')} style={styles.headerIcon} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Investment Properties</Text>
           <TouchableOpacity style={styles.headerBtn}>
-            <View style={styles.headerCircle}>
-              <Text style={styles.filterIcon}>⚡</Text>
-            </View>
+            <Image source={require('../assets/group.png')} style={styles.headerIcon} />
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
 
-      {investmentProperties.length > 0 ? (
-        <FlatList
-          data={investmentProperties}
-          renderItem={renderProperty}
-          keyExtractor={item => item.id.toString()}
-          numColumns={2}
-          contentContainerStyle={styles.listingsGrid}
-          showsVerticalScrollIndicator={false}
-        />
-      ) : (
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyStateEmoji}>💰</Text>
-          <Text style={styles.emptyStateTitle}>No Investment Properties</Text>
-          <Text style={styles.emptyStateText}>
-            Check back later for new investment opportunities
-          </Text>
-          <TouchableOpacity 
-            style={styles.browseButton}
-            onPress={() => navigation.navigate('HomeTab')}
-          >
-            <Text style={styles.browseButtonText}>Browse All Properties</Text>
-          </TouchableOpacity>
+        {/* Featured Images Grid */}
+        <View style={styles.featuredGrid}>
+          <Image source={featuredImages[0]} style={styles.mainImage} />
+          <View style={styles.sideImages}>
+            <Image source={featuredImages[1]} style={styles.sideImage} />
+            <Image source={featuredImages[2]} style={styles.sideImage} />
+          </View>
         </View>
-      )}
+
+        {/* Title & Subtitle */}
+        <Text style={styles.title}>Investment Properties</Text>
+        <Text style={styles.subtitle}>Find your next investment opportunity.</Text>
+
+        {/* Search Bar */}
+        <View style={styles.searchBar}>
+          <Image source={require('../assets/search.png')} style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search investment properties"
+            placeholderTextColor="#BFC5D2"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity 
+              style={styles.clearButton}
+              onPress={() => setSearchQuery('')}
+            >
+              <Text style={styles.clearButtonText}>✕</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
+        {/* Properties Count */}
+        <View style={styles.propertiesRow}>
+          <Text style={styles.propertiesCount}>
+            <Text style={{fontWeight:'700'}}>{filteredProperties.length}</Text> Properties
+            {searchQuery.trim().length > 0 && (
+              <Text style={styles.searchQueryText}> for "{searchQuery}"</Text>
+            )}
+          </Text>
+        </View>
+
+        {/* Properties Grid */}
+        {filteredProperties.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyStateEmoji}>💰</Text>
+            <Text style={styles.emptyStateTitle}>
+              {searchQuery.trim().length > 0 
+                ? `No properties found matching "${searchQuery}"`
+                : 'No Investment Properties'}
+            </Text>
+            <Text style={styles.emptyStateText}>
+              {searchQuery.trim().length > 0
+                ? 'Try adjusting your search criteria'
+                : 'Check back later for new investment opportunities'}
+            </Text>
+            {searchQuery.trim().length > 0 && (
+              <TouchableOpacity 
+                style={styles.clearSearchButton}
+                onPress={() => setSearchQuery('')}
+              >
+                <Text style={styles.clearSearchButtonText}>Clear Search</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity 
+              style={styles.browseButton}
+              onPress={() => navigation.navigate('HomeTab')}
+            >
+              <Text style={styles.browseButtonText}>Browse All Properties</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <FlatList
+            data={filteredProperties}
+            renderItem={renderProperty}
+            keyExtractor={item => item.id.toString()}
+            numColumns={2}
+            contentContainerStyle={styles.listingsGrid}
+            showsVerticalScrollIndicator={false}
+          />
+        )}
+      </SafeAreaView>
     </View>
   );
 };
@@ -161,39 +237,115 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    paddingTop: 64,
   },
   safeArea: {
     backgroundColor: '#fff',
   },
   headerRow: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    marginTop: 8,
-    marginBottom: 8,
+    alignItems: 'center',
+    marginHorizontal: 24,
+    marginBottom: 12,
   },
-  headerBtn: {},
-  headerCircle: {
+  headerBtn: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#F5F4F8',
+    backgroundColor: '#F5F5F7',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  backIcon: {
-    fontSize: 24,
-    color: '#252B5C',
+  headerIcon: {
+    width: 18,
+    height: 18,
+    tintColor: '#252B5C',
   },
-  filterIcon: {
-    fontSize: 20,
-    color: '#252B5C',
+  featuredGrid: {
+    flexDirection: 'row',
+    marginHorizontal: 24,
+    marginBottom: 16,
   },
-  headerTitle: {
+  mainImage: {
+    width: width*0.52,
+    height: width*0.52,
+    borderRadius: 18,
+    marginRight: 8,
+  },
+  sideImages: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+  },
+  sideImage: {
+    width: width*0.32,
+    height: width*0.25,
+    borderRadius: 18,
+    marginBottom: 8,
+  },
+  title: {
     fontSize: 24,
     fontWeight: '700',
     color: '#252B5C',
+    marginHorizontal: 24,
+    marginTop: 8,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#7B7B93',
+    marginHorizontal: 24,
+    marginBottom: 12,
+  },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F5F5F7',
+    borderRadius: 16,
+    marginHorizontal: 24,
+    paddingHorizontal: 12,
+    marginBottom: 12,
+    height: 48,
+  },
+  searchIcon: {
+    width: 20,
+    height: 20,
+    tintColor: '#BFC5D2',
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#252B5C',
+  },
+  clearButton: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#E5E5E5',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 8,
+  },
+  clearButtonText: {
+    color: '#7B7B93',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  propertiesRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginHorizontal: 24,
+    marginBottom: 8,
+  },
+  propertiesCount: {
+    fontSize: 18,
+    color: '#252B5C',
+  },
+  searchQueryText: {
+    color: '#7B7B93',
+    fontSize: 16,
+    marginLeft: 4,
   },
   listingsGrid: {
     paddingHorizontal: 8,
@@ -345,6 +497,19 @@ const styles = StyleSheet.create({
     color: '#252B5C',
     fontSize: 16,
     fontWeight: '700',
+  },
+  clearSearchButton: {
+    backgroundColor: '#F5F5F7',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 12,
+    marginTop: 16,
+    marginBottom: 16,
+  },
+  clearSearchButtonText: {
+    color: '#252B5C',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
 

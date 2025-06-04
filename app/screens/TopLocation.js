@@ -50,7 +50,7 @@ const TopLocation = () => {
   const navigation = useNavigation();
 
   const renderItem = ({ item, index }) => (
-    <TouchableOpacity onPress={() => navigation.navigate('TopLocationDetails', { location: item, index })} style={styles.card}>
+    <TouchableOpacity onPress={() => navigation.navigate('LocationListings', { location: item.name })} style={styles.card}>
       <View style={styles.imageWrapper}>
         <Image source={item.image} style={styles.image} />
         <View style={styles.badge}>

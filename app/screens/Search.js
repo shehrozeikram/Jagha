@@ -129,14 +129,14 @@ const Search = () => {
         {/* Results Info Row */}
         <View style={styles.resultsRow}>
           <Text style={styles.resultsText}>Found <Text style={styles.resultsCount}>{filteredListings.length}</Text> estates</Text>
-          <View style={styles.toggleBtns}>
+          {/* <View style={styles.toggleBtns}>
             <TouchableOpacity style={[styles.toggleBtn, viewType === 'grid' && styles.toggleBtnActive]} onPress={() => setViewType('grid')}>
               <Image source={require('../assets/group_search.png')} style={styles.toggleIcon} />
             </TouchableOpacity>
             <TouchableOpacity style={[styles.toggleBtn, viewType === 'list' && styles.toggleBtnActive]} onPress={() => setViewType('list')}>
               <Image source={require('../assets/vector.png')} style={styles.toggleIcon} />
             </TouchableOpacity>
-          </View>
+          </View> */}
         </View>
       </SafeAreaView>
       {/* Listings Grid */}

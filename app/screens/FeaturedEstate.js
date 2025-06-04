@@ -57,7 +57,21 @@ const FeaturedEstate = () => {
       {/* Properties Grid */}
       <ScrollView contentContainerStyle={styles.cardsGrid} showsVerticalScrollIndicator={false}>
         {[0,1,2,3].map((i) => (
-          <View key={i} style={styles.card}>
+          <TouchableOpacity
+            key={i}
+            style={styles.card}
+            onPress={() => navigation.navigate('PropertyDetails', {
+              property: {
+                image: estateImages[i%estateImages.length],
+                price: '45.5 Lac to 2 Crore PKR',
+                location: 'Rawalpindi',
+                type: 'For Sale',
+                size: '5 - 10 Marla',
+                featured: true,
+                title: 'Featured Property',
+              }
+            })}
+          >
             <View style={{position:'relative'}}>
               <Image source={estateImages[i%estateImages.length]} style={styles.cardImage} />
               <View style={styles.heartCircle}><Image source={require('../assets/heart.png')} style={styles.heartIcon} /></View>
@@ -73,7 +87,7 @@ const FeaturedEstate = () => {
               <Image source={require('../assets/location.png')} style={styles.cardDetailIcon} />
               <Text style={styles.cardDetailText}>5 - 10 Marla</Text>
             </View>
-          </View>
+          </TouchableOpacity>
         ))}
       </ScrollView>
     </View>

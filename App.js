@@ -29,6 +29,10 @@ import TopAgentProfile from './app/screens/TopAgentProfile';
 import Favorites from './app/screens/Favorites';
 import Investors from './app/screens/Investors';
 import Search from './app/screens/Search';
+import LocationListings from './app/screens/LocationListings';
+import PropertyDetails from './app/screens/PropertyDetails';
+import AddProperty from './app/screens/AddProperty';
+import AddPropertyLocation from './app/screens/AddPropertyLocation';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -189,6 +193,10 @@ const App = () => {
               gestureDirection: 'vertical',
             }}
           />
+          <Stack.Screen name="LocationListings" component={LocationListings} />
+          <Stack.Screen name="PropertyDetails" component={PropertyDetails} />
+          <Stack.Screen name="AddProperty" component={AddProperty} />
+          <Stack.Screen name="AddPropertyLocation" component={AddPropertyLocation} />
         </Stack.Navigator>
       </NavigationContainer>
     </GestureHandlerRootView>

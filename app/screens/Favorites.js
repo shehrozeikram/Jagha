@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,6 +8,7 @@ import {
   FlatList,
   Dimensions,
   SafeAreaView,
+  TextInput,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
@@ -47,6 +48,17 @@ const favorites = [
 
 const Favorites = () => {
   const navigation = useNavigation();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Filter favorites based on search query
+  const filteredFavorites = favorites.filter(favorite => 
+    searchQuery.trim().length === 0 ||
+    favorite.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    favorite.price.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    favorite.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    favorite.size.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    favorite.agent.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const renderFavorite = ({ item }) => (
     <TouchableOpacity 
@@ -86,43 +98,83 @@ const Favorites = () => {
             style={styles.headerBtn} 
             onPress={() => navigation.goBack()}
           >
-            <View style={styles.headerCircle}>
-              <Text style={styles.backIcon}>←</Text>
-            </View>
+            <Image source={require('../assets/back_arrow.png')} style={styles.headerIcon} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Favorites</Text>
           <TouchableOpacity style={styles.headerBtn}>
-            <View style={styles.headerCircle}>
-              <Text style={styles.filterIcon}>⚡</Text>
-            </View>
+            <Image source={require('../assets/group.png')} style={styles.headerIcon} />
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
 
-      {favorites.length > 0 ? (
-        <FlatList
-          data={favorites}
-          renderItem={renderFavorite}
-          keyExtractor={item => item.id.toString()}
-          numColumns={2}
-          contentContainerStyle={styles.listingsGrid}
-          showsVerticalScrollIndicator={false}
-        />
-      ) : (
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyStateEmoji}>💝</Text>
-          <Text style={styles.emptyStateTitle}>No Favorites Yet</Text>
-          <Text style={styles.emptyStateText}>
-            Save your favorite properties here to view them later
-          </Text>
-          <TouchableOpacity 
-            style={styles.browseButton}
-            onPress={() => navigation.navigate('HomeTab')}
-          >
-            <Text style={styles.browseButtonText}>Browse Properties</Text>
-          </TouchableOpacity>
+        <Text style={styles.title}>Favorites</Text>
+        <Text style={styles.subtitle}>Your saved properties.</Text>
+
+        <View style={styles.searchBar}>
+          <Image source={require('../assets/search.png')} style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search your favorites"
+            placeholderTextColor="#BFC5D2"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity 
+              style={styles.clearButton}
+              onPress={() => setSearchQuery('')}
+            >
+              <Text style={styles.clearButtonText}>✕</Text>
+            </TouchableOpacity>
+          )}
         </View>
-      )}
+
+        <View style={styles.propertiesRow}>
+          <Text style={styles.propertiesCount}>
+            <Text style={{fontWeight:'700'}}>{filteredFavorites.length}</Text> Properties
+            {searchQuery.trim().length > 0 && (
+              <Text style={styles.searchQueryText}> for "{searchQuery}"</Text>
+            )}
+          </Text>
+        </View>
+
+        {filteredFavorites.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyStateEmoji}>💝</Text>
+            <Text style={styles.emptyStateTitle}>
+              {searchQuery.trim().length > 0 
+                ? `No favorites found matching "${searchQuery}"`
+                : 'No Favorites Yet'}
+            </Text>
+            <Text style={styles.emptyStateText}>
+              {searchQuery.trim().length > 0
+                ? 'Try adjusting your search criteria'
+                : 'Save your favorite properties here to view them later'}
+            </Text>
+            {searchQuery.trim().length > 0 && (
+              <TouchableOpacity 
+                style={styles.clearSearchButton}
+                onPress={() => setSearchQuery('')}
+              >
+                <Text style={styles.clearSearchButtonText}>Clear Search</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity 
+              style={styles.browseButton}
+              onPress={() => navigation.navigate('HomeTab')}
+            >
+              <Text style={styles.browseButtonText}>Browse Properties</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <FlatList
+            data={filteredFavorites}
+            renderItem={renderFavorite}
+            keyExtractor={item => item.id.toString()}
+            numColumns={2}
+            contentContainerStyle={styles.listingsGrid}
+            showsVerticalScrollIndicator={false}
+          />
+        )}
+      </SafeAreaView>
     </View>
   );
 };
@@ -131,39 +183,107 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    paddingTop: 64,
   },
   safeArea: {
     backgroundColor: '#fff',
   },
   headerRow: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    marginTop: 8,
-    marginBottom: 8,
+    alignItems: 'center',
+    marginHorizontal: 24,
+    marginBottom: 12,
   },
-  headerBtn: {},
-  headerCircle: {
+  headerBtn: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#F5F4F8',
+    backgroundColor: '#F5F5F7',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  backIcon: {
-    fontSize: 24,
-    color: '#252B5C',
+  headerIcon: {
+    width: 18,
+    height: 18,
+    tintColor: '#252B5C',
   },
-  filterIcon: {
-    fontSize: 20,
-    color: '#252B5C',
-  },
-  headerTitle: {
+  title: {
     fontSize: 24,
     fontWeight: '700',
     color: '#252B5C',
+    marginHorizontal: 24,
+    marginTop: 8,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#7B7B93',
+    marginHorizontal: 24,
+    marginBottom: 12,
+  },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F5F5F7',
+    borderRadius: 16,
+    marginHorizontal: 24,
+    paddingHorizontal: 12,
+    marginBottom: 12,
+    height: 48,
+  },
+  searchIcon: {
+    width: 20,
+    height: 20,
+    tintColor: '#BFC5D2',
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#252B5C',
+  },
+  clearButton: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#E5E5E5',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 8,
+  },
+  clearButtonText: {
+    color: '#7B7B93',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  propertiesRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginHorizontal: 24,
+    marginBottom: 8,
+  },
+  propertiesCount: {
+    fontSize: 18,
+    color: '#252B5C',
+  },
+  searchQueryText: {
+    color: '#7B7B93',
+    fontSize: 16,
+    marginLeft: 4,
+  },
+  clearSearchButton: {
+    backgroundColor: '#F5F5F7',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 12,
+    marginTop: 16,
+    marginBottom: 16,
+  },
+  clearSearchButtonText: {
+    color: '#252B5C',
+    fontSize: 14,
+    fontWeight: '600',
   },
   listingsGrid: {
     paddingHorizontal: 8,
