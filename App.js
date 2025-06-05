@@ -33,6 +33,8 @@ import LocationListings from './app/screens/LocationListings';
 import PropertyDetails from './app/screens/PropertyDetails';
 import AddProperty from './app/screens/AddProperty';
 import AddPropertyLocation from './app/screens/AddPropertyLocation';
+import AddPropertyPhotos from './app/screens/AddPropertyPhotos';
+import AddPropertyFeatures from './app/screens/AddPropertyFeatures';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -197,6 +199,8 @@ const App = () => {
           <Stack.Screen name="PropertyDetails" component={PropertyDetails} />
           <Stack.Screen name="AddProperty" component={AddProperty} />
           <Stack.Screen name="AddPropertyLocation" component={AddPropertyLocation} />
+          <Stack.Screen name="AddPropertyPhotos" component={AddPropertyPhotos} />
+          <Stack.Screen name="AddPropertyFeatures" component={AddPropertyFeatures} />
         </Stack.Navigator>
       </NavigationContainer>
     </GestureHandlerRootView>

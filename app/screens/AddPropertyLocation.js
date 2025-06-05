@@ -85,7 +85,7 @@ const AddPropertyLocation = () => {
         <TouchableOpacity style={styles.headerBtn} onPress={() => navigation.goBack()}>
           <Image source={require('../assets/back_arrow.png')} style={styles.headerIcon} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.nextBtn} onPress={() => navigation.push('AddPropertyLocation')}>
+        <TouchableOpacity style={styles.nextBtn} onPress={() => navigation.navigate('AddPropertyPhotos')}>
           <LinearGradient
             colors={["#FFD225", "#B89B2B"]}
             start={{ x: 0, y: 0 }}

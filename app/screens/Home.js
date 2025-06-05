@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -14,11 +14,11 @@ import {
   Animated,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 
-const listings = [
+const initialListings = [
   {
     id: 1,
     image: require('../assets/real_estate_residential.png'),
@@ -110,7 +110,20 @@ const Home = () => {
   const [cityModalVisible, setCityModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const navigation = useNavigation();
+  const route = useRoute();
   const fabScale = useState(new Animated.Value(1))[0];
+
+  // Listings state
+  const [listings, setListings] = useState(initialListings);
+
+  // Prepend new listing if passed from AddPropertyFeatures
+  useEffect(() => {
+    if (route.params?.newListing) {
+      setListings(prev => [route.params.newListing, ...prev]);
+      // Remove the param so it doesn't keep prepending
+      navigation.setParams({ newListing: undefined });
+    }
+  }, [route.params?.newListing]);
 
   const handleFabPressIn = () => {
     Animated.spring(fabScale, {
