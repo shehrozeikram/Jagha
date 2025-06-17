@@ -9,6 +9,8 @@ import {
   Dimensions,
   SafeAreaView,
   ScrollView,
+  Modal,
+  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
@@ -106,6 +108,54 @@ const sold = [
 const TopAgentProfile = () => {
   const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState('Listings');
+  const [modalVisible, setModalVisible] = useState(false);
+  const authToken = '';
+
+  const handleLogout = async () => {
+    setModalVisible(false);
+    try {
+      const headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      };
+      if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+      }
+      const response = await fetch('http://jagha.com/api/logout', {
+        method: 'POST',
+        headers,
+      });
+      const text = await response.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        // ignore parse error, just proceed
+      }
+      // TODO: Clear user data/token here
+      navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
+    } catch (error) {
+      // Still log out locally even if API fails
+      navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
+    }
+  };
+
+  const handleDeleteAccount = () => {
+    setModalVisible(false);
+    Alert.alert(
+      'Delete Account',
+      'Are you sure you want to delete your account? This action cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete', style: 'destructive', onPress: () => {
+            // TODO: Call delete account API here
+            navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
+          }
+        }
+      ]
+    );
+  };
 
   const renderListing = ({ item }) => (
     <View style={styles.listingCard}>
@@ -130,7 +180,9 @@ const TopAgentProfile = () => {
           <View style={styles.headerCircle}><Image source={require('../assets/back_arrow.png')} style={styles.headerIcon} /></View>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Profile</Text>
-        <TouchableOpacity style={styles.headerBtn}><View style={styles.headerCircle}><Image source={require('../assets/vector.png')} style={styles.headerIcon} /></View></TouchableOpacity>
+        <TouchableOpacity style={styles.settingsBtn} onPress={() => setModalVisible(true)}>
+          <Text style={styles.settingsIcon}>⋮</Text>
+        </TouchableOpacity>
       </View>
       {/* Agent Info */}
       <View style={styles.agentInfoSection}>
@@ -165,8 +217,8 @@ const TopAgentProfile = () => {
       <View style={styles.listingsHeaderRow}>
         <Text style={styles.listingsCount}>{activeTab === 'Listings' ? '140 listings' : '12 sold'}</Text>
         <View style={styles.toggleBtnsRow}>
-          <View style={styles.toggleBtnActive}><Image source={require('../assets/group_search.png')} style={styles.toggleIcon} /></View>
-          <View style={styles.toggleBtn}><Image source={require('../assets/vector.png')} style={styles.toggleIcon} /></View>
+          {/* <View style={styles.toggleBtnActive}><Image source={require('../assets/group_search.png')} style={styles.toggleIcon} /></View>
+          <View style={styles.toggleBtn}><Image source={require('../assets/vector.png')} style={styles.toggleIcon} /></View> */}
         </View>
       </View>
     </>
@@ -181,7 +233,9 @@ const TopAgentProfile = () => {
                <View style={styles.headerCircle}><Image source={require('../assets/back_arrow.png')} style={styles.headerIcon} /></View>
             </TouchableOpacity>
             <Text style={styles.headerTitle}>Profile</Text>
-            <TouchableOpacity style={styles.headerBtn}><View style={styles.headerCircle}><Image source={require('../assets/share.png')} style={styles.headerIcon} /></View></TouchableOpacity>
+            <TouchableOpacity style={styles.settingsBtn} onPress={() => setModalVisible(true)}>
+              <Text style={styles.settingsIcon}>⋮</Text>
+            </TouchableOpacity>
          </View>
       </SafeAreaView>
       {/* Scrollable Content (Agent Info, Tabs, Listings/Sold Cards, Start Chat Button) */}
@@ -234,6 +288,24 @@ const TopAgentProfile = () => {
            </View>
          )}
       />
+      {/* Modal for Logout/Delete */}
+      <Modal
+        visible={modalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setModalVisible(false)}>
+          <View style={styles.modalContent}>
+            <TouchableOpacity style={styles.modalOption} onPress={handleLogout}>
+              <Text style={styles.modalOptionText}>Logout</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.modalOption} onPress={handleDeleteAccount}>
+              <Text style={[styles.modalOptionText, { color: 'red' }]}>Delete my account</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 };
@@ -289,6 +361,12 @@ const styles = StyleSheet.create({
   listingSizeText: { color: '#B89B2B', fontSize: 13, fontWeight: '600' },
   chatBtn: { position: 'absolute', left: 24, right: 24, bottom: 24, backgroundColor: 'linear-gradient(90deg, #FFE066 0%, #FFD60A 50%, #B89B2B 100%)', borderRadius: 16, paddingVertical: 18, alignItems: 'center', justifyContent: 'center', shadowColor: '#FFD225', shadowOpacity: 0.12, shadowRadius: 8, elevation: 2 },
   chatBtnText: { color: '#fff', fontWeight: '700', fontSize: 18, letterSpacing: 1 },
+  settingsBtn: { padding: 8, marginRight: 8 },
+  settingsIcon: { fontSize: 28, color: '#252B5C', fontWeight: 'bold' },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.18)', justifyContent: 'flex-end', alignItems: 'center' },
+  modalContent: { backgroundColor: '#fff', borderTopLeftRadius: 18, borderTopRightRadius: 18, width: '100%', padding: 24, alignItems: 'center' },
+  modalOption: { width: '100%', paddingVertical: 16, alignItems: 'center' },
+  modalOptionText: { fontSize: 18, color: '#252B5C', fontWeight: '600' },
 });
 
 export default TopAgentProfile; 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,9 +8,13 @@ import {
   Image,
   Dimensions,
   SafeAreaView,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
 
@@ -19,13 +23,84 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = () => {
-    navigation.navigate('Register');
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com', // Get this from Google Cloud Console
+      offlineAccess: true,
+    });
+  }, []);
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Please enter both email and password');
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      const response = await fetch('http://jagha.com/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Save token and user info
+        if (data.token) {
+          await AsyncStorage.setItem('authToken', data.token);
+          if (data.user) {
+            await AsyncStorage.setItem('user', JSON.stringify(data.user));
+          }
+        }
+        navigation.navigate('MainTabs');
+      } else {
+        console.log('Login failed:', data);
+        Alert.alert('Login Failed', data.message || 'Invalid email or password');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      Alert.alert('Error', 'Network error. Please check your connection and try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleRegister = () => {
     navigation.navigate('Register');
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      // Check if your device supports Google Play
+      await GoogleSignin.hasPlayServices();
+      
+      // Sign in with Google
+      const userInfo = await GoogleSignin.signIn();
+      
+      console.log('Google Sign-In successful:', userInfo);
+      
+      // You can access user info like:
+      // userInfo.user.name
+      // userInfo.user.email
+      // userInfo.user.photo
+      
+      // Navigate to main app after successful login
+      navigation.navigate('MainTabs');
+      
+    } catch (error) {
+      console.error('Google Sign-In Error:', error);
+      Alert.alert('Error', 'Google sign-in failed. Please try again.');
+    }
   };
 
   return (
@@ -76,14 +151,22 @@ const Login = () => {
           </TouchableOpacity>
         </View>
         {/* Login Button */}
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+        <TouchableOpacity 
+          style={[styles.loginButton, isLoading && styles.loginButtonDisabled]} 
+          onPress={handleLogin}
+          disabled={isLoading}
+        >
           <LinearGradient
             colors={["#FFE066", "#FFD60A", "#B89B2B"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.loginButtonGradient}
           >
-            <Text style={styles.loginButtonText}>Login</Text>
+            {isLoading ? (
+              <ActivityIndicator color="#117C3E" size="small" />
+            ) : (
+              <Text style={styles.loginButtonText}>Login</Text>
+            )}
           </LinearGradient>
         </TouchableOpacity>
         {/* Divider with OR */}
@@ -94,7 +177,7 @@ const Login = () => {
         </View>
         {/* Social Buttons */}
         <View style={styles.socialRow}>
-          <TouchableOpacity style={styles.socialButton}>
+          <TouchableOpacity style={styles.socialButton} onPress={handleGoogleLogin}>
             <Image source={require('../assets/google_icon.png')} style={styles.socialIcon} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.socialButton}>
@@ -184,6 +267,9 @@ const styles = StyleSheet.create({
     marginTop: 16,
     height: 64,
   },
+  loginButtonDisabled: {
+    opacity: 0.7,
+  },
   loginButtonGradient: {
     borderRadius: 14,
     alignItems: 'center',
@@ -253,6 +339,10 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
 });
+
+export const getAuthToken = async () => {
+  return await AsyncStorage.getItem('authToken');
+};
 
 export default Login;
 
