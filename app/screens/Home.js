@@ -135,6 +135,16 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Featured agencies state
+  const [featuredAgencies, setFeaturedAgencies] = useState([]);
+  const [featuredAgenciesLoading, setFeaturedAgenciesLoading] = useState(false);
+  const [featuredAgenciesError, setFeaturedAgenciesError] = useState(null);
+
+  // Popular properties state
+  const [popularProperties, setPopularProperties] = useState([]);
+  const [popularPropertiesLoading, setPopularPropertiesLoading] = useState(false);
+  const [popularPropertiesError, setPopularPropertiesError] = useState(null);
+
   // Prepend new listing if passed from AddPropertyFeatures
   useEffect(() => {
     if (route.params?.newListing) {
@@ -146,6 +156,16 @@ const Home = () => {
   // Fetch properties from API
   useEffect(() => {
     fetchProperties();
+  }, []);
+
+  // Fetch featured agencies from API
+  useEffect(() => {
+    fetchFeaturedAgencies();
+  }, []);
+
+  // Fetch popular properties from API
+  useEffect(() => {
+    fetchPopularProperties();
   }, []);
 
   const fetchProperties = async () => {
@@ -179,6 +199,126 @@ const Home = () => {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchFeaturedAgencies = async () => {
+    setFeaturedAgenciesLoading(true);
+    setFeaturedAgenciesError(null);
+    try {
+      console.log('Fetching featured agencies...');
+      const token = await AsyncStorage.getItem('authToken');
+      console.log('Using token for featured agencies:', token ? 'Token exists' : 'No token');
+      
+      const response = await fetch('http://jagha.com/api/featured-agencies', {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : '',
+        },
+      });
+      
+      console.log('Featured agencies response status:', response.status);
+      console.log('Featured agencies response headers:', response.headers);
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          console.log('Unauthorized - token might be invalid');
+          await AsyncStorage.removeItem('authToken');
+          navigation.navigate('Login');
+          throw new Error('Please login again');
+        }
+        const errorText = await response.text();
+        console.log('Featured agencies error response:', errorText);
+        throw new Error(`Failed to fetch featured agencies: ${response.status} ${response.statusText}`);
+      }
+      
+      const result = await response.json();
+      console.log('Featured agencies API response:', result);
+      
+      if (result.data) {
+        setFeaturedAgencies(result.data);
+        console.log('Featured agencies set:', result.data.length, 'items');
+      } else {
+        console.log('No data in featured agencies response');
+        setFeaturedAgencies([]);
+      }
+    } catch (err) {
+      console.error('Error fetching featured agencies:', err);
+      console.error('Error details:', err.message);
+      setFeaturedAgenciesError(err.message);
+      setFeaturedAgencies([]);
+    } finally {
+      setFeaturedAgenciesLoading(false);
+    }
+  };
+
+  const fetchPopularProperties = async () => {
+    setPopularPropertiesLoading(true);
+    setPopularPropertiesError(null);
+    try {
+      console.log('Fetching popular properties...');
+      const token = await AsyncStorage.getItem('authToken');
+      console.log('Using token for popular properties:', token ? 'Token exists' : 'No token');
+      
+      const response = await fetch('http://jagha.com/api/popular-properties', {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : '',
+        },
+      });
+      
+      console.log('Popular properties response status:', response.status);
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          console.log('Unauthorized - token might be invalid');
+          await AsyncStorage.removeItem('authToken');
+          navigation.navigate('Login');
+          throw new Error('Please login again');
+        }
+        const errorText = await response.text();
+        console.log('Popular properties error response:', errorText);
+        throw new Error(`Failed to fetch popular properties: ${response.status} ${response.statusText}`);
+      }
+      
+      const result = await response.json();
+      console.log('Popular properties API response:', result);
+      
+      // Extract data from popular_cities_commercial_on_sale
+      let propertiesData = [];
+      if (result.data && result.data.popular_cities_commercial_on_sale && Array.isArray(result.data.popular_cities_commercial_on_sale)) {
+        propertiesData = result.data.popular_cities_commercial_on_sale.map(item => ({
+          id: item.id || Math.random().toString(),
+          city_name: item.city_name || 'N/A',
+          property_purpose: item.property_purpose || 'N/A',
+          property_type: item.property_type || 'N/A',
+          property_sub_type: item.property_sub_type || 'N/A',
+          location_name: item.location_name || 'N/A',
+          // Add fallback values for other fields used in the UI
+          price: item.price || item.property_sub_type || 'N/A',
+          land_area: item.land_area || 'N/A',
+          area_unit: item.area_unit || '',
+          premium_listing: item.premium_listing || false,
+          images: item.images || [],
+          title: item.title || item.property_type || 'Property'
+        }));
+      }
+      
+      console.log('Properties data extracted from popular_cities_commercial_on_sale:', propertiesData);
+      setPopularProperties(propertiesData);
+      console.log('Popular properties set:', propertiesData.length, 'items');
+      
+    } catch (err) {
+      console.error('Error fetching popular properties:', err);
+      console.error('Error details:', err.message);
+      setPopularPropertiesError(err.message);
+      setPopularProperties([]);
+    } finally {
+      setPopularPropertiesLoading(false);
     }
   };
 
@@ -445,53 +585,77 @@ const Home = () => {
               )}
             </ScrollView>
           )}
-          {/* Featured Estates Section: Always show all listings */}
+          {/* Featured Estates Section: Show featured agencies from API */}
           <View style={styles.sectionRow}>
-            <Text style={styles.sectionTitle}>Featured Estates</Text>
+            <Text style={styles.sectionTitle}>Featured Agencies</Text>
             <TouchableOpacity><Text style={styles.sectionLink}>view all</Text></TouchableOpacity>
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginLeft: 24, marginBottom: 16}}>
             <View style={{flexDirection: 'row'}}>
-              {filteredListings.map(listing => (
-                <TouchableOpacity
-                  key={listing.id}
-                  onPress={() => navigation.navigate('FeaturedEstate', { listing })}
-                  style={{
-                    width: 268,
-                    height: 156,
-                    borderRadius: 10,
-                    backgroundColor: '#F5F4F8',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    marginRight: 16,
-                    padding: 10,
-                    shadowColor: '#000',
-                    shadowOpacity: 0.04,
-                    shadowRadius: 4,
-                    elevation: 1,
-                  }}>
-                  {/* Image and heart icon */}
-                  <View style={{position: 'relative'}}>
-                    <Image source={getImageSource(listing)} style={{width: 100, height: 136, borderRadius: 10}} />
-                    <View style={{position: 'absolute', top: 8, left: 8, backgroundColor: '#7ED957', borderRadius: 16, width: 28, height: 28, alignItems: 'center', justifyContent: 'center'}}>
-                      <Text style={{color: 'white', fontWeight: 'bold', fontSize: 18}}>♥</Text>
+              {featuredAgenciesLoading ? (
+                <View style={{width: 268, height: 156, borderRadius: 10, backgroundColor: '#F5F4F8', alignItems: 'center', justifyContent: 'center', marginRight: 16}}>
+                  <ActivityIndicator size="small" color="#FFD225" />
+                  <Text style={{color: '#7B7B93', fontSize: 14, marginTop: 8}}>Loading...</Text>
+                </View>
+              ) : featuredAgenciesError ? (
+                <View style={{width: 268, height: 156, borderRadius: 10, backgroundColor: '#F5F4F8', alignItems: 'center', justifyContent: 'center', marginRight: 16, padding: 16}}>
+                  <Text style={{color: '#7B7B93', fontSize: 14, textAlign: 'center', marginBottom: 12}}>Failed to load featured estates</Text>
+                  <TouchableOpacity 
+                    style={{backgroundColor: '#FFD225', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8}}
+                    onPress={fetchFeaturedAgencies}
+                  >
+                    <Text style={{color: '#252B5C', fontSize: 12, fontWeight: '600'}}>Retry</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : featuredAgencies.length === 0 ? (
+                <View style={{width: 268, height: 156, borderRadius: 10, backgroundColor: '#F5F4F8', alignItems: 'center', justifyContent: 'center', marginRight: 16}}>
+                  <Text style={{color: '#7B7B93', fontSize: 14, textAlign: 'center'}}>No featured estates available</Text>
+                </View>
+              ) : (
+                featuredAgencies.map(agency => (
+                  <TouchableOpacity
+                    key={agency.id}
+                    onPress={() => navigation.navigate('FeaturedEstate', { agency })}
+                    style={{
+                      width: 268,
+                      height: 156,
+                      borderRadius: 10,
+                      backgroundColor: '#F5F4F8',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      marginRight: 16,
+                      padding: 10,
+                      shadowColor: '#000',
+                      shadowOpacity: 0.04,
+                      shadowRadius: 4,
+                      elevation: 1,
+                    }}>
+                    {/* Image and heart icon */}
+                    <View style={{position: 'relative'}}>
+                      <Image 
+                        source={agency.logo ? {uri: agency.logo} : require('../assets/real_estate_residential.png')} 
+                        style={{width: 100, height: 136, borderRadius: 10}} 
+                      />
+                      <View style={{position: 'absolute', top: 8, left: 8, backgroundColor: '#7ED957', borderRadius: 16, width: 28, height: 28, alignItems: 'center', justifyContent: 'center'}}>
+                        <Text style={{color: 'white', fontWeight: 'bold', fontSize: 18}}>♥</Text>
+                      </View>
+                      <View style={{position: 'absolute', bottom: 8, left: 8, backgroundColor: '#252B5C', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 2}}>
+                        <Text style={{color: 'white', fontSize: 11, fontWeight: '600'}}>{agency.type || 'Agency'}</Text>
+                      </View>
                     </View>
-                    <View style={{position: 'absolute', bottom: 8, left: 8, backgroundColor: '#252B5C', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 2}}>
-                      <Text style={{color: 'white', fontSize: 11, fontWeight: '600'}}>{listing.type}</Text>
+                    {/* Details */}
+                    <View style={{flex: 1, marginLeft: 12, justifyContent: 'center'}}>
+                      <Text style={{color: '#252B5C', fontWeight: '700', fontSize: 16, marginBottom: 2}}>{agency.title || agency.name || 'Agency Name'}</Text>
+                      <Text style={{color: '#7B7B93', fontSize: 13, marginBottom: 2}}>{agency.description ? agency.description.slice(0, 20) + '...' : 'Featured Agency'}</Text>
+                      <View style={{flexDirection: 'row', alignItems: 'center', marginBottom: 2}}>
+                        <Text style={{color: '#117C3E', fontSize: 13}}>📍</Text>
+                        <Text style={{color: '#7B7B93', fontSize: 13, marginLeft: 4}}>{agency.city || agency.location || 'Location'}</Text>
+                      </View>
+                      <Text style={{color: '#252B5C', fontWeight: '700', fontSize: 13, marginTop: 8}}>{agency.rating ? `${agency.rating} ★` : 'Featured'}</Text>
                     </View>
-                  </View>
-                  {/* Details */}
-                  <View style={{flex: 1, marginLeft: 12, justifyContent: 'center'}}>
-                    <Text style={{color: '#252B5C', fontWeight: '700', fontSize: 16, marginBottom: 2}}>{listing.price}</Text>
-                    <Text style={{color: '#7B7B93', fontSize: 13, marginBottom: 2}}>Gallery</Text>
-                    <View style={{flexDirection: 'row', alignItems: 'center', marginBottom: 2}}>
-                      <Text style={{color: '#117C3E', fontSize: 13}}>📍</Text>
-                      <Text style={{color: '#7B7B93', fontSize: 13, marginLeft: 4}}>{listing.location}</Text>
-                    </View>
-                    <Text style={{color: '#252B5C', fontWeight: '700', fontSize: 13, marginTop: 8}}>{listing.size}</Text>
-                  </View>
-                </TouchableOpacity>
-              ))}
+                  </TouchableOpacity>
+                ))
+              )}
             </View>
           </ScrollView>
           {/* Top Locations */}
@@ -530,51 +694,76 @@ const Home = () => {
             <View style={styles.agentCircle}><Image source={{uri: 'https://randomuser.me/api/portraits/women/46.jpg'}} style={styles.agentImg} /><Text style={styles.agentName}>Suman J.</Text></View>
             <View style={styles.agentCircle}><Image source={{uri: 'https://randomuser.me/api/portraits/men/47.jpg'}} style={styles.agentImg} /><Text style={styles.agentName}>Faisal W.</Text></View>
           </View>
-          {/* Explore Nearby Estates */}
+          {/* Popular Properties */}
           <View style={{marginHorizontal: 24}}>
-            <Text style={styles.sectionTitle}>Explore Nearby Estates</Text>
+            <Text style={styles.sectionTitle}>Popular Properties</Text>
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginHorizontal: 24, marginBottom: 24}}>
-            <View style={styles.nearbyCardV2}>
-              <View style={{position: 'relative'}}>
-                <Image source={require('../assets/real_estate_commercial.png')} style={styles.nearbyImgV2} />
-                <View style={styles.nearbyHeart}><Text style={{color: 'white', fontWeight: 'bold', fontSize: 16}}>♥</Text></View>
-                <View style={styles.nearbyBadgesRow}>
-                  <View style={styles.nearbyBadgeV2}><Text style={{color: '#fff', fontSize: 11, fontWeight: '600'}}>For Sale</Text></View>
-                  <View style={styles.nearbyBadgeFeaturedV2}><Text style={{color: '#fff', fontSize: 11, fontWeight: '600'}}>Featured</Text></View>
+            {popularPropertiesLoading ? (
+              <View style={styles.nearbyCardV2}>
+                <View style={{width: '100%', height: 110, backgroundColor: '#F5F4F8', borderRadius: 12, alignItems: 'center', justifyContent: 'center'}}>
+                  <ActivityIndicator size="small" color="#FFD225" />
+                  <Text style={{color: '#7B7B93', fontSize: 12, marginTop: 8}}>Loading...</Text>
                 </View>
               </View>
-              <Text style={styles.nearbyPriceV2}>45.5 Lac to 2 Crore PKR</Text>
-              <View style={styles.nearbyLocationRow}>
-                <Image source={require('../assets/location.png')} style={styles.nearbyLocationIcon} />
-                <Text style={styles.nearbyLocationText}>Islamabad</Text>
-                <Text style={styles.nearbyForSaleText}>For Sale</Text>
-              </View>
-              <View style={styles.nearbySizeRow}>
-                <Image source={require('../assets/size_icon.png')} style={styles.nearbySizeIcon} />
-                <Text style={styles.nearbySizeText}>5 - 10 Marla</Text>
-              </View>
-            </View>
-            <View style={styles.nearbyCardV2}>
-              <View style={{position: 'relative'}}>
-                <Image source={{uri: 'https://source.unsplash.com/400x300/?villa,3'}} style={styles.nearbyImgV2} />
-                <View style={styles.nearbyHeart}><Text style={{color: 'white', fontWeight: 'bold', fontSize: 16}}>♥</Text></View>
-                <View style={styles.nearbyBadgesRow}>
-                  <View style={styles.nearbyBadgeV2}><Text style={{color: '#fff', fontSize: 11, fontWeight: '600'}}>For Sale</Text></View>
-                  <View style={styles.nearbyBadgeFeaturedV2}><Text style={{color: '#fff', fontSize: 11, fontWeight: '600'}}>Featured</Text></View>
+            ) : popularPropertiesError ? (
+              <View style={styles.nearbyCardV2}>
+                <View style={{width: '100%', height: 110, backgroundColor: '#F5F4F8', borderRadius: 12, alignItems: 'center', justifyContent: 'center', padding: 16}}>
+                  <Text style={{color: '#7B7B93', fontSize: 12, textAlign: 'center', marginBottom: 8}}>Failed to load</Text>
+                  <TouchableOpacity 
+                    style={{backgroundColor: '#FFD225', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6}}
+                    onPress={fetchPopularProperties}
+                  >
+                    <Text style={{color: '#252B5C', fontSize: 10, fontWeight: '600'}}>Retry</Text>
+                  </TouchableOpacity>
                 </View>
               </View>
-              <Text style={styles.nearbyPriceV2}>60 Lac to 1.2 Crore PKR</Text>
-              <View style={styles.nearbyLocationRow}>
-                <Image source={require('../assets/location.png')} style={styles.nearbyLocationIcon} />
-                <Text style={styles.nearbyLocationText}>Lahore</Text>
-                <Text style={styles.nearbyForSaleText}>For Sale</Text>
+            ) : popularProperties.length === 0 ? (
+              <View style={styles.nearbyCardV2}>
+                <View style={{width: '100%', height: 110, backgroundColor: '#F5F4F8', borderRadius: 12, alignItems: 'center', justifyContent: 'center'}}>
+                  <Text style={{color: '#7B7B93', fontSize: 12, textAlign: 'center'}}>No popular properties</Text>
+                </View>
               </View>
-              <View style={styles.nearbySizeRow}>
-                <Image source={require('../assets/size_icon.png')} style={styles.nearbySizeIcon} />
-                <Text style={styles.nearbySizeText}>1 - 3 Marla</Text>
-              </View>
-            </View>
+            ) : (
+              (popularProperties && Array.isArray(popularProperties) ? popularProperties : []).map(property => (
+                <TouchableOpacity
+                  key={property.id}
+                  style={styles.nearbyCardV2}
+                  onPress={() => navigation.navigate('PropertyDetails', { propertyId: property.id })}
+                >
+                  <View style={{position: 'relative'}}>
+                    <Image source={getImageSource(property)} style={styles.nearbyImgV2} />
+                    <View style={styles.nearbyHeart}>
+                      <Text style={{color: 'white', fontWeight: 'bold', fontSize: 16}}>♥</Text>
+                    </View>
+                    <View style={styles.nearbyBadgesRow}>
+                      <View style={styles.nearbyBadgeV2}>
+                        <Text style={{color: '#fff', fontSize: 11, fontWeight: '600'}}>{property.property_type || 'Property'}</Text>
+                      </View>
+                      {property.premium_listing && (
+                        <View style={styles.nearbyBadgeFeaturedV2}>
+                          <Text style={{color: '#fff', fontSize: 11, fontWeight: '600'}}>Featured</Text>
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                  <Text style={styles.nearbyPriceV2}>
+                    {property.property_sub_type || 'N/A'}
+                  </Text>
+                  <View style={styles.nearbyLocationRow}>
+                    <Image source={require('../assets/location.png')} style={styles.nearbyLocationIcon} />
+                    <Text style={styles.nearbyLocationText}>{property.city_name || 'N/A'}</Text>
+                    <Text style={styles.nearbyForSaleText}>{property.property_purpose || 'Property'}</Text>
+                  </View>
+                  <View style={styles.nearbySizeRow}>
+                    <Image source={require('../assets/size_icon.png')} style={styles.nearbySizeIcon} />
+                    <Text style={styles.nearbySizeText}>
+                      {property.location_name || 'Location N/A'}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              ))
+            )}
           </ScrollView>
         </ScrollView>
       )}
